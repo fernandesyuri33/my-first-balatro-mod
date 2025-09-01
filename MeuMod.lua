@@ -2,7 +2,7 @@
 -- Adds "The Negativator" joker
 
 SMODS.Joker {
-  key = 'mymod_negativator', -- prefix + unique name
+  key = 'negativator',
   loc_txt = {
     name = 'The Negativator',
     text = {
