@@ -7,9 +7,9 @@ SMODS.Atlas {
     -- The name of the file, for the code to pull the atlas from
     path = "negativator.png",
     -- Width of each sprite in 1x size
-    px = 1024,
+    px = 71,
     -- Height of each sprite in 1x size
-    py = 1536
+    py = 95
 }
 
 
@@ -28,6 +28,9 @@ SMODS.Joker {
     atlas = 'TheNegativatorAtlas', -- vanilla atlas for now
     pos = { x = 0, y = 0 },        -- vanilla sprite slot
     cost = 10,
+    eternal_compat = false,
+    perishable_compat = false,
+    blueprint_compat = false,
     loc_vars = function(self, info_queue, card)
         info_queue[#info_queue + 1] = G.P_CENTERS.e_negative
     end,
