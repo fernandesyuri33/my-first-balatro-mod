@@ -1,6 +1,18 @@
 -- MyMod.lua
 -- Adds "The Negativator" joker
 
+SMODS.Atlas {
+	-- Key for code to find it with
+	key = "TheNegativatorAtlas",
+	-- The name of the file, for the code to pull the atlas from
+	path = "negativator.png",
+	-- Width of each sprite in 1x size
+	px = 1024,
+	-- Height of each sprite in 1x size
+	py = 1536
+}
+
+
 SMODS.Joker {
   key = 'negativator',
   loc_txt = {
@@ -13,7 +25,7 @@ SMODS.Joker {
   },
   config = { extra = { used = false } },
   rarity = 3,
-  atlas = 'jokers', -- vanilla atlas for now
+  atlas = 'TheNegativatorAtlas', -- vanilla atlas for now
   pos = { x = 0, y = 0 }, -- vanilla sprite slot
   cost = 10,
   loc_vars = function(self, info_queue, card)
