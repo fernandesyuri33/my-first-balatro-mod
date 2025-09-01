@@ -71,68 +71,101 @@ SMODS.Joker {
                         end
 
                         local desired = weighted_pick(card.ability.extra.consume_weights or {})
-                        local to_consume = math.min(desired, #victims)
+                        local available = #victims
 
-                        -- (optional) status ping showing how many we’ll eat
-                        if to_consume > 0 then
+                        if available >= desired and desired > 0 then
+                            -- Há vítimas suficientes: consome exatamente 'desired'
                             card_eval_status_text(card, 'extra', nil, nil, nil,
-                                { message = ('Consome %d'):format(to_consume) })
-                        end
+                                { message = ('Consome %d'):format(desired) })
 
-                        -- destroy exactly 'to_consume' left jokers
-                        for i = 1, to_consume do
-                            local v = victims[i]
+                            for i = 1, desired do
+                                local v = victims[i]
+                                G.E_MANAGER:add_event(Event({
+                                    func = function()
+                                        play_sound('tarot1')
+                                        v.T.r = -0.2; v:juice_up(0.3, 0.4)
+                                        v.states.drag.is = true
+                                        v.children.center.pinch.x = true
+                                        G.E_MANAGER:add_event(Event({
+                                            trigger = 'after',
+                                            delay = 0.3,
+                                            blockable = false,
+                                            func = function()
+                                                if v.area == G.jokers then G.jokers:remove_card(v) end
+                                                v:remove()
+                                                return true
+                                            end
+                                        }))
+                                        card_eval_status_text(card, 'extra', nil, nil, nil, { message = 'Consumido!' })
+                                        return true
+                                    end
+                                }))
+                            end
+
+                            -- depois de destruir, negativiza o da direita
                             G.E_MANAGER:add_event(Event({
+                                trigger = 'after',
+                                delay = 0.35,
                                 func = function()
-                                    play_sound('tarot1')
-                                    v.T.r = -0.2; v:juice_up(0.3, 0.4)
-                                    v.states.drag.is = true
-                                    v.children.center.pinch.x = true
-                                    G.E_MANAGER:add_event(Event({
-                                        trigger = 'after',
-                                        delay = 0.3,
-                                        blockable = false,
-                                        func = function()
-                                            if v.area == G.jokers then G.jokers:remove_card(v) end
-                                            v:remove()
-                                            return true
+                                    local my_idx
+                                    for i, c in ipairs(G.jokers.cards) do
+                                        if c == card then
+                                            my_idx = i; break
                                         end
-                                    }))
-                                    card_eval_status_text(card, 'extra', nil, nil, nil, { message = 'Consumido!' })
+                                    end
+                                    if not my_idx then return true end
+                                    local right = G.jokers.cards[my_idx + 1]
+
+                                    if right and right ~= card then
+                                        if not right.edition or right.edition.key ~= 'e_negative' then
+                                            right:set_edition('e_negative', true)
+                                            right:juice_up(0.6, 0.6)
+                                            card_eval_status_text(right, 'extra', nil, nil, nil,
+                                                { message = 'Negativado!' })
+                                        else
+                                            card_eval_status_text(card, 'extra', nil, nil, nil,
+                                                { message = 'Já Negativo' })
+                                        end
+                                    else
+                                        card_eval_status_text(card, 'extra', nil, nil, nil,
+                                            { message = 'Nenhum Curinga à direita' })
+                                    end
+                                    return true
+                                end
+                            }))
+
+                            -- e por fim, gasta e debuffa
+                            G.E_MANAGER:add_event(Event({
+                                trigger = 'after',
+                                delay = 0.1,
+                                func = function()
+                                    card.ability.extra.used = true
+                                    card:set_debuff(true)
+                                    card:juice_up(0.4, 0.6)
+                                    card_eval_status_text(card, 'extra', nil, nil, nil, { message = 'Gasto' })
+                                    return true
+                                end
+                            }))
+                        else
+                            -- NÃO há curingas suficientes à esquerda: não destrói ninguém, não negativiza
+                            card_eval_status_text(
+                                card, 'extra', nil, nil, nil,
+                                { message = ('Curingas insuficientes à esquerda (%d/%d)'):format(available, desired) }
+                            )
+
+                            -- ainda assim, gasta e debuffa o Negativador
+                            G.E_MANAGER:add_event(Event({
+                                trigger = 'after',
+                                delay = 0.1,
+                                func = function()
+                                    card.ability.extra.used = true
+                                    card:set_debuff(true)
+                                    card:juice_up(0.4, 0.6)
+                                    card_eval_status_text(card, 'extra', nil, nil, nil, { message = 'Gasto' })
                                     return true
                                 end
                             }))
                         end
-
-                        G.E_MANAGER:add_event(Event({
-                            trigger = 'after',
-                            delay = 0.35,
-                            func = function()
-                                local my_idx
-                                for i, c in ipairs(G.jokers.cards) do
-                                    if c == card then
-                                        my_idx = i; break
-                                    end
-                                end
-                                if not my_idx then return true end
-                                local right = G.jokers.cards[my_idx + 1]
-
-                                if right and right ~= card then
-                                    if not right.edition or right.edition.key ~= 'e_negative' then
-                                        right:set_edition('e_negative', true)
-                                        right:juice_up(0.6, 0.6)
-                                        card_eval_status_text(right, 'extra', nil, nil, nil, { message = 'Negativado!' })
-                                    else
-                                        card_eval_status_text(card, 'extra', nil, nil, nil,
-                                            { message = 'Já Negativo' })
-                                    end
-                                else
-                                    card_eval_status_text(card, 'extra', nil, nil, nil,
-                                        { message = 'Nenhum Curinga à direita' })
-                                end
-                                return true
-                            end
-                        }))
 
                         return true
                     end
