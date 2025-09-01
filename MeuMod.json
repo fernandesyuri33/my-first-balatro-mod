@@ -1,0 +1,13 @@
+{
+  "id": "MyMod",
+  "name": "The Negativator",
+  "author": ["YourName"],
+  "description": "Adds a custom Joker: The Negativator. When a Boss Blind is defeated, it destroys up to 3 Jokers on its left and makes the Joker on its right Negative.",
+  "prefix": "mymod",
+  "main_file": "MyMod.lua",
+  "badge_colour": "8f4ac7",
+  "dependencies": [
+    "Steamodded (>=1.0.0~ALPHA-1225a)"
+  ],
+  "version": "1.0.0"
+}
