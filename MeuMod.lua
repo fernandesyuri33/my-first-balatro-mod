@@ -20,7 +20,7 @@ SMODS.Joker {
         text = {
             "Quando um {C:attention}Blind Chefe{} é derrotado:",
             "{C:red}Destrói{} até {C:attention}3{} Curingas a sua {C:attention}esquerda{},",
-            "para transformar o Curinga a sua {C:attention}direita{} em {C:dark_edition}Negative{}"
+            "para transformar o Curinga a sua {C:attention}direita{} em {C:dark_edition}Negativo{}"
         }
     },
     config = { extra = { used = false, consume_weights = { [1] = 0.60, [2] = 0.30, [3] = 0.10 } } },
