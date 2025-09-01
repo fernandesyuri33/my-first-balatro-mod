@@ -127,21 +127,9 @@ SMODS.Joker {
                                             { message = 'Já Negativo' })
                                     end
                                 else
-                                    card_eval_status_text(card, 'extra', nil, nil, nil, { message = 'Nenhum Curinga à direita' })
+                                    card_eval_status_text(card, 'extra', nil, nil, nil,
+                                        { message = 'Nenhum Curinga à direita' })
                                 end
-                                return true
-                            end
-                        }))
-
-                        G.E_MANAGER:add_event(Event({
-                            trigger = 'after',
-                            delay = 0.1,
-                            func = function()
-                                -- mark as permanently spent and show the red X
-                                card.ability.extra.used = true
-                                card:set_debuff(true) -- <<< draws the X + disables calculate hooks
-                                card:juice_up(0.4, 0.6)
-                                card_eval_status_text(card, 'extra', nil, nil, nil, { message = 'Gasto' })
                                 return true
                             end
                         }))
