@@ -14,6 +14,7 @@ SMODS.Atlas {
 
 SMODS.Back {
     key = 'baralhoNovo',
+    name = 'thenegativator-baralhoNovo',
     loc_txt = {
         name = 'Baralho Novo',
         text = {
@@ -30,7 +31,16 @@ SMODS.Back {
 -- Utilitário: aplica o número de slots baseado no Ante atual
 local function apply_joker_slots_for_ante()
     if not (G and G.GAME and G.jokers) then return end
-    if not (G.GAME.selected_back and G.GAME.selected_back.key == 'baralhoNovo') then return end
+    if not (
+            G.GAME.selected_back and (
+                G.GAME.selected_back.key == 'baralhoNovo'
+                or G.GAME.selected_back.key == 'thenegativator-baralhoNovo'
+                or G.GAME.selected_back.name == 'baralhoNovo'
+                or G.GAME.selected_back.name == 'thenegativator-baralhoNovo'
+            )
+        ) then
+        return
+    end
 
     local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
     local slots = math.max(1, ante) -- 1 no Ante 1, 2 no Ante 2, etc.
