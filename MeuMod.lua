@@ -12,6 +12,46 @@ SMODS.Atlas {
     py = 95
 }
 
+SMODS.Back {
+    key = 'baralhoNovo',
+    loc_txt = {
+        name = 'Baralho Novo',
+        text = {
+            'Inicia com 1 espaço de Curinga',
+            'Ganha 1 espaço de Curinga a cada Aposta (Ante)',
+        }
+    },
+    discovered = true,
+    unlocked = true,
+    atlas = 'TheNegativatorAtlas',
+    pos = { x = 0, y = 1 },
+}
+
+-- Utilitário: aplica o número de slots baseado no Ante atual
+local function apply_joker_slots_for_ante()
+    if not (G and G.GAME and G.jokers) then return end
+    if not (G.GAME.selected_back and G.GAME.selected_back.key == 'customBack1') then return end
+
+    local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
+    local slots = math.max(1, ante) -- 1 no Ante 1, 2 no Ante 2, etc.
+    if G.GAME.joker_slots ~= slots or (G.jokers.config.card_limit ~= slots) then
+        G.GAME.joker_slots = slots
+        G.jokers.config.card_limit = slots
+    end
+end
+
+-- 1) Run start (garante que começa com 1 slot)
+local _igo = Game.init_game_object
+function Game:init_game_object()
+    local ret = _igo(self)
+    apply_joker_slots_for_ante()
+    return ret
+end
+
+-- 2) A cada novo round/Ante (hook já usado no seu exemplo do Castle)
+function SMODS.current_mod.reset_game_globals(run_start)
+    apply_joker_slots_for_ante()
+end
 
 SMODS.Joker {
     key = 'negativator',
@@ -37,6 +77,7 @@ SMODS.Joker {
 
     calculate = function(self, card, context)
         if card.ability.extra.used then return end
+
         if context.end_of_round and not context.repetition and context.game_over == false then
             local blind = G and G.GAME and G.GAME.blind
             if blind and blind.boss then
