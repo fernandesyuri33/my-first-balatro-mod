@@ -18,13 +18,13 @@ SMODS.Back {
         name = 'Baralho Novo',
         text = {
             'Inicia com 1 espaço de Curinga',
-            'Ganha 1 espaço de Curinga a cada Aposta (Ante)',
+            'Ganha 1 espaço de Curinga a cada Aposta',
         }
     },
     discovered = true,
     unlocked = true,
     atlas = 'TheNegativatorAtlas',
-    pos = { x = 0, y = 1 },
+    pos = { x = 1, y = 0 },
 }
 
 -- Utilitário: aplica o número de slots baseado no Ante atual
