@@ -14,7 +14,6 @@ SMODS.Atlas {
 
 SMODS.Back {
     key = 'baralhoNovo',
-    name = 'thenegativator-baralhoNovo',
     loc_txt = {
         name = 'Baralho Novo',
         text = {
@@ -35,8 +34,8 @@ local function apply_joker_slots_for_ante()
             G.GAME.selected_back and (
                 G.GAME.selected_back.key == 'baralhoNovo'
                 or G.GAME.selected_back.key == 'thenegativator-baralhoNovo'
-                or G.GAME.selected_back.name == 'baralhoNovo'
-                or G.GAME.selected_back.name == 'thenegativator-baralhoNovo'
+                or G.GAME.selected_back.key == 'b_thenegativator-baralhoNovo'
+                or G.GAME.selected_back.key == 'b_thenegativator_baralhoNovo'
             )
         ) then
         return
