@@ -12,6 +12,24 @@ SMODS.Atlas {
     py = 95
 }
 
+local function set_joker_slots_for_run(n)
+  if not (G and G.GAME) then return end
+  local current = (G.jokers and G.jokers.config and G.jokers.config.card_limit) or 5
+  n = math.max(1, n)
+
+  -- fonte da verdade do run
+  G.GAME.joker_slots = n
+
+  -- aplica imediatamente na UI/engine
+  if G.jokers and G.jokers.change_size then
+    local delta = n - current
+    if delta ~= 0 then G.jokers:change_size(delta) end
+  elseif G.jokers then
+    G.jokers.config.card_limit = n
+    if G.jokers.align then G.jokers:align() end
+  end
+end
+
 SMODS.Back {
     key = 'baralhoNovo',
     loc_txt = {
@@ -25,41 +43,31 @@ SMODS.Back {
     unlocked = true,
     atlas = 'TheNegativatorAtlas',
     pos = { x = 1, y = 0 },
+    apply = function(self)
+        event({
+            func = function()
+                if G.GAME.selected_back and (G.GAME.selected_back.key == 'baralhoNovo' or G.GAME.selected_back.key == 'b_baralhoNovo' or G.GAME.selected_back.key == 'thenegativator_baralhoNovo' or G.GAME.selected_back.key == 'b_thenegativator_baralhoNovo') then
+                    local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
+                    set_joker_slots_for_run(ante) -- 1 slot no Ante 1, 2 no Ante 2, etc.
+                end
+                return true
+            end
+        })
+    end,
 }
 
--- Utilitário: aplica o número de slots baseado no Ante atual
-local function apply_joker_slots_for_ante()
-    if not (G and G.GAME and G.jokers) then return end
-    if not (
-            G.GAME.selected_back and (
-                G.GAME.selected_back.key == 'baralhoNovo'
-                or G.GAME.selected_back.key == 'thenegativator-baralhoNovo'
-                or G.GAME.selected_back.key == 'b_thenegativator-baralhoNovo'
-                or G.GAME.selected_back.key == 'b_thenegativator_baralhoNovo'
-            )
-        ) then
-        return
-    end
-
-    local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
-    local slots = math.max(1, ante) -- 1 no Ante 1, 2 no Ante 2, etc.
-    if G.GAME.joker_slots ~= slots or (G.jokers.config.card_limit ~= slots) then
-        G.GAME.joker_slots = slots
-        G.jokers.config.card_limit = slots
-    end
-end
-
--- 1) Run start (garante que começa com 1 slot)
-local _igo = Game.init_game_object
-function Game:init_game_object()
-    local ret = _igo(self)
-    apply_joker_slots_for_ante()
-    return ret
-end
-
--- 2) A cada novo round/Ante (hook já usado no seu exemplo do Castle)
+local _reset = SMODS.current_mod.reset_game_globals
 function SMODS.current_mod.reset_game_globals(run_start)
-    apply_joker_slots_for_ante()
+  if _reset then _reset(run_start) end
+
+  if G.GAME.selected_back and (G.GAME.selected_back.key == 'baralhoNovo' or G.GAME.selected_back.key == 'b_baralhoNovo' or G.GAME.selected_back.key == 'thenegativator_baralhoNovo' or G.GAME.selected_back.key == 'b_thenegativator_baralhoNovo') then
+    -- roda no início de cada Ante
+    event({ func = function()
+      local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
+                set_joker_slots_for_run(ante)
+      return true
+    end })
+  end
 end
 
 SMODS.Joker {
