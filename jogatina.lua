@@ -1,11 +1,10 @@
--- MyMod.lua
--- Adds "The Negativator" joker
+-- jogatina.lua
 
 SMODS.Atlas {
     -- Key for code to find it with
-    key = "TheNegativatorAtlas",
+    key = "jogatina_atlas",
     -- The name of the file, for the code to pull the atlas from
-    path = "negativator.png",
+    path = "jogatina.png",
     -- Width of each sprite in 1x size
     px = 71,
     -- Height of each sprite in 1x size
@@ -34,9 +33,9 @@ local function set_joker_slots_for_run(n)
 end
 
 SMODS.Back {
-    key = 'baralhoNovo',
+    key = 'escalada',
     loc_txt = {
-        name = 'Baralho Novo',
+        name = 'Baralho Escalada',
         text = {
             'Inicia com 1 espaço de Curinga',
             'Ganha 1 espaço de Curinga a cada Aposta',
@@ -44,7 +43,7 @@ SMODS.Back {
     },
     discovered = true,
     unlocked = true,
-    atlas = 'TheNegativatorAtlas',
+    atlas = 'jogatina_atlas',
     pos = { x = 1, y = 0 },
 }
 
@@ -52,7 +51,7 @@ local _reset = SMODS.current_mod.reset_game_globals
 function SMODS.current_mod.reset_game_globals(run_start)
     if _reset then _reset(run_start) end
 
-    if G.GAME.selected_back and G.GAME.selected_back.name == 'b_thenegativator_baralhoNovo' then
+    if G.GAME.selected_back and G.GAME.selected_back.name == 'b_jogatina_escalada' then
         -- roda no início de cada Ante
         event({
             func = function()
@@ -76,7 +75,7 @@ SMODS.Joker {
     },
     config = { extra = { used = false, consume_weights = { [1] = 0.60, [2] = 0.30, [3] = 0.10 } } },
     rarity = 3,
-    atlas = 'TheNegativatorAtlas', -- vanilla atlas for now
+    atlas = 'jogatina_atlas', -- vanilla atlas for now
     pos = { x = 0, y = 0 },        -- vanilla sprite slot
     cost = 10,
     eternal_compat = false,
