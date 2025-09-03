@@ -13,21 +13,24 @@ SMODS.Atlas {
 }
 
 local function set_joker_slots_for_run(n)
-  if not (G and G.GAME) then return end
-  local current = (G.jokers and G.jokers.config and G.jokers.config.card_limit) or 5
-  n = math.max(1, n)
+    if not (G and G.GAME) then return end
+    local current = (G.jokers and G.jokers.config and G.jokers.config.card_limit) or 5
+    print('current joker slots: ', current)
+    n = math.max(1, n)
+    print('n: ', n)
 
-  -- fonte da verdade do run
-  G.GAME.joker_slots = n
+    -- fonte da verdade do run
+    G.GAME.joker_slots = n
 
-  -- aplica imediatamente na UI/engine
-  if G.jokers and G.jokers.change_size then
-    local delta = n - current
-    if delta ~= 0 then G.jokers:change_size(delta) end
-  elseif G.jokers then
-    G.jokers.config.card_limit = n
-    if G.jokers.align then G.jokers:align() end
-  end
+    -- aplica imediatamente na UI/engine
+    if G.jokers and G.jokers.change_size then
+        local delta = n - current
+        print('delta: ', delta)
+        if delta ~= 0 then G.jokers:change_size(delta) end
+    elseif G.jokers then
+        G.jokers.config.card_limit = n
+        if G.jokers.align then G.jokers:align() end
+    end
 end
 
 SMODS.Back {
@@ -43,31 +46,22 @@ SMODS.Back {
     unlocked = true,
     atlas = 'TheNegativatorAtlas',
     pos = { x = 1, y = 0 },
-    apply = function(self)
-        event({
-            func = function()
-                if G.GAME.selected_back and (G.GAME.selected_back.key == 'baralhoNovo' or G.GAME.selected_back.key == 'b_baralhoNovo' or G.GAME.selected_back.key == 'thenegativator_baralhoNovo' or G.GAME.selected_back.key == 'b_thenegativator_baralhoNovo') then
-                    local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
-                    set_joker_slots_for_run(ante) -- 1 slot no Ante 1, 2 no Ante 2, etc.
-                end
-                return true
-            end
-        })
-    end,
 }
 
 local _reset = SMODS.current_mod.reset_game_globals
 function SMODS.current_mod.reset_game_globals(run_start)
-  if _reset then _reset(run_start) end
+    if _reset then _reset(run_start) end
 
-  if G.GAME.selected_back and (G.GAME.selected_back.key == 'baralhoNovo' or G.GAME.selected_back.key == 'b_baralhoNovo' or G.GAME.selected_back.key == 'thenegativator_baralhoNovo' or G.GAME.selected_back.key == 'b_thenegativator_baralhoNovo') then
-    -- roda no início de cada Ante
-    event({ func = function()
-      local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
+    if G.GAME.selected_back and G.GAME.selected_back.name == 'b_thenegativator_baralhoNovo' then
+        -- roda no início de cada Ante
+        event({
+            func = function()
+                local ante = (G.GAME.round_resets and G.GAME.round_resets.ante) or 1
                 set_joker_slots_for_run(ante)
-      return true
-    end })
-  end
+                return true
+            end
+        })
+    end
 end
 
 SMODS.Joker {
